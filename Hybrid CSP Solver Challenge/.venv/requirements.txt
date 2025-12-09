@@ -1,0 +1,12 @@
+huggingface_hub
+pandas
+pyarrow
+numpy
+scipy
+matplotlib
+seaborn
+scikit-learn
+datasets
+jupyter
+tabulate
+rich
