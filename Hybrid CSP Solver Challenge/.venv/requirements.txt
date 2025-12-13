@@ -6,7 +6,6 @@ scipy
 matplotlib
 seaborn
 pyarrow
-fastparquet
 scikit-learn
 datasets
 jupyter
