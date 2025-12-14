@@ -12,7 +12,7 @@ YELLOW = "\033[93m"
 CYAN = "\033[96m"
 RESET = "\033[0m"
 
-showDataset = False
+showDataset = True
 
 # Projekt-Root
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
