@@ -114,6 +114,7 @@ class AC3:
 
                 print(f"  ▪︎  {category_class.__name__}: {domain_names}")
 
+
         print("\n--- --- ---")
 
     def generate_all_combinations(self):
