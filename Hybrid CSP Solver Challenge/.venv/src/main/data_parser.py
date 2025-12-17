@@ -20,46 +20,51 @@ class DataParser:
         self.csp_domains = {}
         self.path = path
         self._houses = None
+        self.list_values = {}
         #setup
         self.setup()
 
-    equal = lambda x, y: x == y
-    nequal = lambda x, y: x != y
-    left = lambda x, y: x < y
-    right = lambda x, y: x > y
-    dleft = lambda x, y: x-y == -1
-    dright = lambda x, y: x-y == 1
-    nextto = lambda x, y: abs(x-y) == 1
-    betw = lambda x, y: abs(x-y) == 2
+    equal = lambda self, x, y: x == y
+    nequal = lambda self, x, y: x != y
+    left = lambda self, x, y: x < y
+    right = lambda self, x, y: x > y
+    dleft = lambda self, x, y: x-y == -1
+    dright = lambda self, x, y: x-y == 1
+    nextto = lambda self, x, y: abs(x-y) == 1
+    betw = lambda self, x, y: abs(x-y) == 2
 
     def setup(self):
-
         k = 0
+
         df = pd.read_parquet(self.path)
         puzzle = df["puzzle"].iloc[k]
         #print(puzzle)
+
         text = puzzle.split("##")[0].split(":", 1)[1].split("\n")
         text = [s for s in text if s.strip()]  # remove empty strings
+
         count = 1
-        list_values = {}
         for t in range(len(text)):
             values2 = self.get_enums(text[t], count)
-            list_values[self.enums[t]] = values2
+            self.list_values[self.enums[t]] = values2
             count += 1
-        # print("Enums:", enums[0]["Peter"])
-        # print("Categories:", categories)
+
         size = df["size"].iloc[k]
         houses_amount = size[0]
+
         self.get_houses(houses_amount)
-        self.csp_domains = {h: list_values for h in self.houses}
+
+        self.csp_domains = {h: self.list_values for h in self.houses}
         # print("Domains", csp_domains)
+
         clues = puzzle.split('Clues:\n')[1]  # split the puzzle string to only get the clues
         clues = clues.split('\n')  # split clues at each newline
+        
         self.get_constraints(clues)
-        #
+
         #print()
         #counter = 1
-        #
+
         #for c in self.constraints:
         #    print(f"C:{counter}", c)
         #    print()
@@ -118,27 +123,27 @@ class DataParser:
             #if line in clues is empty
             if c == '':
                 continue
+
             val = []
-            key = next(iter(self.csp_domains))
-            for i in self.csp_domains[key]:
-                for j in range(len(self.csp_domains[key][i])):
+            for i in self.list_values:
+                for j in range(len(self.list_values[i])):
                     skip = False
-                    if re.search(self.csp_domains[key][i][j].name, c, re.IGNORECASE):
+                    if re.search(self.list_values[i][j].name, c, re.IGNORECASE):
                         # if the name of a value is partly existing in another for example 'tall' in 'super tall'
                         for v in range(1, len(val), 2):
                             if val[v-1] == i:
-                                if re.search(val[v].name, self.csp_domains[key][i][j].name, re.IGNORECASE):
+                                if re.search(val[v].name, self.list_values[i][j].name, re.IGNORECASE):
                                     print("delete:", val[v])
-                                    val[v] = self.csp_domains[key][i][j]
+                                    val[v] = self.list_values[i][j]
                                     skip = True
                                     break
-                                if re.search(self.csp_domains[key][i][j].name, val[v].name, re.IGNORECASE):
+                                if re.search(self.list_values[i][j].name, val[v].name, re.IGNORECASE):
                                     print("skip")
                                     skip = True
                                     break
                         if not skip:
                             val.append(i)
-                            val.append(self.csp_domains[key][i][j])
+                            val.append(self.list_values[i][j])
 
             #if order wrong, switch
             #print(val)
@@ -152,11 +157,18 @@ class DataParser:
             if len(val) == 2:
                 val[1] = val[0][val[1].name]
 
+            cont = False
+
             # check if a value is directly set in one of the Houses
             for i in range(len(h)):
                 if re.search(h[i], c):
                     val.append(i+1)
+                    reduce_domains()
+                    cont = True
                     break
+
+            if cont:
+                continue
 
             if len(val) < 3 or len(val) > 4:
                 continue
@@ -195,6 +207,9 @@ class DataParser:
 
             #how val should look like: [<operation>, <category1>, <value1>, <category2>, <value2>]
             self.constraints.append(val)
+
+def reduce_domains():
+    return None
 
 
 
