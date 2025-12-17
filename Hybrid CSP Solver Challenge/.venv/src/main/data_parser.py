@@ -68,9 +68,15 @@ class DataParser:
         #global houses
         for i in range(1, int(h)+1):
             self.houses.append(f"H{i}")
-        #print("Houses:", houses)
+        
         if _houses is None:
             _houses = Enum("Houses", houses)
+
+        for i in range(len(houses)):
+            self.houses[i] = self._houses[self.houses[i]]
+
+        #print("Houses:", houses)
+            
         return self.houses
 
     def get_enums(self,text, count):
@@ -188,4 +194,5 @@ class DataParser:
 
             #how val should look like: [<operation>, <category1>, <value1>, <category2>, <value2>]
             self.constraints.append(val)
+
 
