@@ -69,8 +69,8 @@ class DataParser:
         for i in range(1, int(h)+1):
             self.houses.append(f"H{i}")
         
-        if _houses is None:
-            _houses = Enum("Houses", houses)
+        if self._houses is None:
+            self._houses = Enum("Houses", self.houses)
 
         for i in range(len(houses)):
             self.houses[i] = self._houses[self.houses[i]]
@@ -194,5 +194,6 @@ class DataParser:
 
             #how val should look like: [<operation>, <category1>, <value1>, <category2>, <value2>]
             self.constraints.append(val)
+
 
 
