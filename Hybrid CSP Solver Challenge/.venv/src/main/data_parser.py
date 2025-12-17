@@ -67,8 +67,10 @@ class DataParser:
     def get_houses(self,h):
         #global houses
         for i in range(1, int(h)+1):
-            self.houses.append(i)
-        #print("Houses:", self.houses)
+            self.houses.append(f"H{i}")
+        #print("Houses:", houses)
+        if _houses is None:
+            _houses = Enum("Houses", houses)
         return self.houses
 
     def get_enums(self,text, count):
@@ -110,25 +112,26 @@ class DataParser:
             if c == '':
                 continue
             val = []
-            for i in self.csp_domains[1]:
-                for j in range(len(self.csp_domains[1][i])):
+            key = next(iter(self.csp_domains))
+            for i in self.csp_domains[key]:
+                for j in range(len(self.csp_domains[key][i])):
                     skip = False
-                    if re.search(self.csp_domains[1][i][j].name, c, re.IGNORECASE):
+                    if re.search(self.csp_domains[key][i][j].name, c, re.IGNORECASE):
                         # if the name of a value is partly existing in another for example 'tall' in 'super tall'
                         for v in range(1, len(val), 2):
                             if val[v-1] == i:
-                                if re.search(val[v].name, self.csp_domains[1][i][j].name, re.IGNORECASE):
+                                if re.search(val[v].name, self.csp_domains[key][i][j].name, re.IGNORECASE):
                                     print("delete:", val[v])
-                                    val[v] = self.csp_domains[1][i][j]
+                                    val[v] = self.csp_domains[key][i][j]
                                     skip = True
                                     break
-                                if re.search(self.csp_domains[1][i][j].name, val[v].name, re.IGNORECASE):
+                                if re.search(self.csp_domains[key][i][j].name, val[v].name, re.IGNORECASE):
                                     print("skip")
                                     skip = True
                                     break
                         if not skip:
                             val.append(i)
-                            val.append(self.csp_domains[1][i][j])
+                            val.append(self.csp_domains[key][i][j])
 
             #if order wrong, switch
             #print(val)
@@ -185,3 +188,4 @@ class DataParser:
 
             #how val should look like: [<operation>, <category1>, <value1>, <category2>, <value2>]
             self.constraints.append(val)
+
