@@ -36,7 +36,7 @@ class DataParser:
         k = 0
         df = pd.read_parquet(self.path)
         puzzle = df["puzzle"].iloc[k]
-        print(puzzle)
+        #print(puzzle)
         text = puzzle.split("##")[0].split(":", 1)[1].split("\n")
         text = [s for s in text if s.strip()]  # remove empty strings
         count = 1
@@ -55,13 +55,14 @@ class DataParser:
         clues = puzzle.split('Clues:\n')[1]  # split the puzzle string to only get the clues
         clues = clues.split('\n')  # split clues at each newline
         self.get_constraints(clues)
-        print()
-        counter = 1
-
-        for c in self.constraints:
-            print(f"C:{counter}", c)
-            print()
-            counter += 1
+        #
+        #print()
+        #counter = 1
+        #
+        #for c in self.constraints:
+        #    print(f"C:{counter}", c)
+        #    print()
+        #    counter += 1
 
     def get_houses(self,h):
         #global houses
