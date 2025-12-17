@@ -19,6 +19,7 @@ class DataParser:
         self.categories_norm = []
         self.csp_domains = {}
         self.path = path
+        self._houses = None
         #setup
         self.setup()
 
@@ -72,7 +73,7 @@ class DataParser:
         if self._houses is None:
             self._houses = Enum("Houses", self.houses)
 
-        for i in range(len(houses)):
+        for i in range(len(self.houses)):
             self.houses[i] = self._houses[self.houses[i]]
 
         #print("Houses:", houses)
