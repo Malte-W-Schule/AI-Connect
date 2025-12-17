@@ -9,7 +9,7 @@ class DataParser:
             "..", "..",
             "dataset",
             "grid_mode",
-            "test-00000-of-00001.parquet")):
+            "test-00000-of-00001.parquet"),testcase=0):
 
 
         self.houses = []
@@ -22,7 +22,7 @@ class DataParser:
         self._houses = None
         self.list_values = {}
         #setup
-        self.setup()
+        self.setup(testcase)
 
     equal = lambda self, x, y: x == y
     nequal = lambda self, x, y: x != y
@@ -33,8 +33,8 @@ class DataParser:
     nextto = lambda self, x, y: abs(x-y) == 1
     betw = lambda self, x, y: abs(x-y) == 2
 
-    def setup(self):
-        k = 0
+    def setup(self,testcase):
+        k = testcase
 
         df = pd.read_parquet(self.path)
         puzzle = df["puzzle"].iloc[k]
@@ -54,7 +54,9 @@ class DataParser:
 
         self.get_houses(houses_amount)
 
-        self.csp_domains = {h: self.list_values for h in self.houses}
+
+        self.csp_domains = {h: {cat: vals.copy() for cat, vals in self.list_values.items()} for h in self.houses}
+        #self.csp_domains = {h: self.list_values for h in self.houses}  #old version
         # print("Domains", csp_domains)
 
         clues = puzzle.split('Clues:\n')[1]  # split the puzzle string to only get the clues
@@ -159,11 +161,15 @@ class DataParser:
 
             cont = False
 
-            # check if a value is directly set in one of the Houses
             for i in range(len(h)):
                 if re.search(h[i], c):
-                    val.append(i+1)
-                    reduce_domains()
+                    if len(val) >= 2:
+                        category = val[0]
+                        value = val[1]
+                        house_nr = i + 1
+
+                        self.reduce_domains(house_nr, category, value)
+
                     cont = True
                     break
 
@@ -208,8 +214,17 @@ class DataParser:
             #how val should look like: [<operation>, <category1>, <value1>, <category2>, <value2>]
             self.constraints.append(val)
 
-def reduce_domains():
-    return None
 
+    def reduce_domains(self, house_nr, category, value):
+        # 1. Bestimme das Ziel-Haus (z.B. H1, H2...)
+        target_house = self.houses[house_nr - 1]
 
+        # 2. Direkte Zuweisung: Dieses Haus kann in dieser Kategorie NUR NOCH diesen Wert haben
+        self.csp_domains[target_house][category] = [value]
 
+        # 3. Ausschlussprinzip: Da dieser Wert nun vergeben ist,
+        # darf er in keinem ANDEREN Haus mehr vorkommen
+        for h_key in self.houses:
+            if h_key != target_house:
+                if value in self.csp_domains[h_key][category]:
+                    self.csp_domains[h_key][category].remove(value)
