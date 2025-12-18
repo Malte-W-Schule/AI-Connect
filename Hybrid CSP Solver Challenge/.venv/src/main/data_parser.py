@@ -15,6 +15,8 @@ class DataParser:
         self.houses = []
         self.enums = []
         self.constraints = []
+
+        # ordered list of category Enum classes (for CSV output)
         self.categories = {}
         self.categories_norm = []
         self.csp_domains = {}
@@ -63,6 +65,9 @@ class DataParser:
         clues = clues.split('\n')  # split clues at each newline
         
         self.get_constraints(clues)
+
+        # ordered list of category Enum classes (for CSV output)
+        self.categories = list(self.list_values.keys())
 
         #print()
         #counter = 1

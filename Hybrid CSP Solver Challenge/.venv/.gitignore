@@ -18,7 +18,7 @@ __pycache__/
 .vscode/
 
 # --- Dataset & Project specific ---
-dataset/
+../../dataset/
 cachedir.tag
 
 # --- Local Python Copy ---

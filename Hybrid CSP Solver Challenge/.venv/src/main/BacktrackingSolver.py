@@ -30,6 +30,7 @@ class BacktrackingSolver:
         self.domains = domains
         self.constraints = constraints
         self.houses = houses
+        self.steps = 0  # initialize counter
 
         # Cache categories (keys in domains[any_house])
         any_house = next(iter(domains))
@@ -57,6 +58,7 @@ class BacktrackingSolver:
     # ---------- Core Backtracking ----------
 
     def _backtrack(self) -> bool:
+        self.steps += 1
         if self._is_complete(self.domains):
             return True
 

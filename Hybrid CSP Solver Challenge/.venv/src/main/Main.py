@@ -1,10 +1,12 @@
 from data_parser import DataParser
-from Ac3 import AC3
-import pandas as pd
-import os
-import re
+from BacktrackingSolver import BacktrackingSolver
+from results_writer import append_results_csv
 
-for i in range(5):
+TOTAL_TESTS = 100
+OUTPUT_FILE = "results.csv"
+
+for i in range(TOTAL_TESTS):
+    print(f"\n=== Solving testcase {i} ===")
 
     dataparser = DataParser(testcase=i)
 
@@ -12,13 +14,30 @@ for i in range(5):
     houses = dataparser.houses
     constraints = dataparser.constraints
 
-    solver = AC3(dataparser.csp_domains, dataparser.constraints, dataparser.houses)
-    #solver.solve()
+    backtracker = BacktrackingSolver(
+        CSP_DOMAINS,
+        constraints,
+        houses
+    )
 
-    from BacktrackingSolver import BacktrackingSolver
-    backtracker = BacktrackingSolver(CSP_DOMAINS,constraints,houses)
-    print("===== Backtracker =====")
-    print(backtracker.solve(use_ac3_preprocess=True))
-    print("===== end =====")
+    solved = backtracker.solve(use_ac3_preprocess=True)
 
-    solver.print_domains(CSP_DOMAINS)
+    if solved:
+        steps = backtracker.steps
+        print(f"Testcase {i} solved in {steps} steps")
+    else:
+        steps = backtracker.steps
+        print(f"Testcase {i} failed")
+
+    append_results_csv(
+        OUTPUT_FILE,
+        f"test-{i:03}",
+        solved,
+        steps,
+        domains=CSP_DOMAINS,
+        houses=houses,
+        categories=dataparser.categories
+    )
+
+print("\n=== ALL DONE ===")
+print("results.csv GENERATED")
